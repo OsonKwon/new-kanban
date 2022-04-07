@@ -1,25 +1,22 @@
 import {ButtonBase, FormControl, Grid, Paper, TextField, Typography} from "@mui/material";
-import moment from "moment";
 import React, {ChangeEvent, useCallback, useState} from "react";
-import TagContainer from "./TaskProperty/TagContainer";
-import Tag from "./entity/Tag";
-import Task from "./entity/Task";
-import TaskImgContainer from "./TaskProperty/TaskImgContainer";
-import TaskTextContainer from "./TaskProperty/TaskTextContainer";
-import TaskModalContainer from "./TaskModalContainer";
+import TagContainer from "../TaskProperty/TagContainer";
+import Task from "../entity/Task";
+import TaskImgContainer from "../TaskProperty/TaskImgContainer";
+import TaskTextContainer from "../TaskProperty/TaskTextContainer";
 
 type Props = {
+    rowIndex: number;
     task: Task;
-    onChangeTitle: (event: ChangeEvent<HTMLInputElement>, id: string) => void;
-    onChangeDescription: (event: ChangeEvent<HTMLInputElement>, id: string) => void;
+    onChangeTitle: (event: ChangeEvent<HTMLInputElement>, id: string, index: number) => void;
+    onChangeDescription: (event: ChangeEvent<HTMLInputElement>, id: string, index: number) => void;
 }
 const TaskContainer = (props: Props) => {
 
-    const {task, onChangeDescription, onChangeTitle} = props;
+    const {rowIndex, task, onChangeDescription, onChangeTitle} = props;
 
     const [modalOpen, setModalOpen] = useState(false);
 
-    const sampleTag = new Tag('deployment');
 
     const onClickTask = () => {
         setModalOpen(true);
@@ -47,13 +44,14 @@ const TaskContainer = (props: Props) => {
                 <Grid item xs={12} sm container>
                     <Grid item xs container direction="column" spacing={2}>
                         <TaskTextContainer
+                            rowIndex={rowIndex}
                             card={task}
                             onChangeTitle={onChangeTitle}
                             onChangeDescription={onChangeDescription}
                         />
                         <Grid item>
                             <TagContainer
-                                tag={sampleTag}
+                                tagGroup={task.tagGroup}
                             />
                         </Grid>
                         <Grid item>
@@ -66,7 +64,7 @@ const TaskContainer = (props: Props) => {
                     </Grid>
                 </Grid>
             </Grid>
-            <TaskModalContainer task={task} open={modalOpen} onClose={onClose}/>
+            {/*<TaskModalContainer task={task} open={modalOpen} onClose={onClose}/>*/}
         </Paper>
 
     );

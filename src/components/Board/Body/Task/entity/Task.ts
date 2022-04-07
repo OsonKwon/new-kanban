@@ -5,7 +5,7 @@ class Task {
     title: string;
     description: string;
     creationDate: number;
-    tagGroups: TagGroup[] = [];
+    tagGroup?: TagGroup;
 
     constructor(taskId: string, title?: string, description?: string, creationDate?: number) {
         this.taskId = taskId;
@@ -13,6 +13,7 @@ class Task {
         this.description = description || "";
         this.creationDate = creationDate || Date.now();
     }
+
 }
 
 export default Task;

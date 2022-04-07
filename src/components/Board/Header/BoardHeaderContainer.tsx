@@ -8,7 +8,6 @@ type Props = {
 const BoardHeaderContainer = (props: Props) => {
 
     const {title, projectId} = props;
-    console.log("render BoardHeaderContainer");
     return (
         <Box>
             <Paper style={{width: "100vw", height: "100px", margin: 5}}>

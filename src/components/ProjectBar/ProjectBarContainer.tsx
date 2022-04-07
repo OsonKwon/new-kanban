@@ -50,7 +50,7 @@ type Props = {
     title: string;
     projects: Project[];
 }
-export default function TopAppBar(props: Props) {
+export default function ProjectBarContainer(props: Props) {
     const theme = useTheme();
 
     const [open, setOpen] = React.useState(false);
@@ -59,7 +59,6 @@ export default function TopAppBar(props: Props) {
         setOpen(open => !open);
     };
 
-    console.log("render TopAppBar");
 
     return (
         <Box sx={{display: 'flex'}}>

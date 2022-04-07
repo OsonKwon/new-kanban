@@ -1,4 +1,4 @@
-import Task from "./entity/Task";
+import Task from "../entity/Task";
 import {Box, Dialog, DialogContent, DialogTitle, Grid, Paper, TextField, Typography} from "@mui/material";
 import React, {useState} from "react";
 
@@ -31,13 +31,9 @@ const TaskModalContainer = (props: Props) => {
             <DialogContent>
                 <Box minHeight={500}>
                     <Grid container direction={"column"}>
-                        {task.tagGroups.map((group) => {
-                            return <Grid item>
-                                <Typography>{group.groupName} : </Typography>
-                            </Grid>
-
-
-                        })}
+                        <Grid item>
+                            <Typography>{task.tagGroup?.groupName} : </Typography>
+                        </Grid>
                     </Grid>
                     <TextField
                         multiline

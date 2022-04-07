@@ -1,14 +1,15 @@
 import Tag from "../entity/Tag";
 import {Chip} from "@mui/material";
 import {FormEvent, useCallback, useState} from "react";
+import TagGroup from "../entity/TagGroup";
 
 type Props = {
-    tag: Tag;
+    tagGroup?: TagGroup;
 }
 const TagContainer = (props: Props) => {
 
-    const { tag } = props;
-    const [tagName, setTagName] = useState(tag.name);
+    const { tagGroup } = props;
+    const [tagName, setTagName] = useState(tagGroup?.groupName);
     const [editable, setEditable] = useState(false);
 
     const onChange = (event: FormEvent<HTMLDivElement>) => {

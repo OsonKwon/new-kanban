@@ -1,5 +1,5 @@
 import React from 'react';
-import KanbanContainer from "./components/KanbanContainer";
+import KanbanContainer from "./components/root/KanbanContainer";
 
 function App() {
   return (
