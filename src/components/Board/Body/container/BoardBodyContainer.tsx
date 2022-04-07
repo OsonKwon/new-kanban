@@ -6,7 +6,7 @@ import Tag from "../Task/entity/Tag";
 import TagGroup from "../Task/entity/TagGroup";
 import Task from "../Task/entity/Task";
 import _ from "lodash";
-import {ActionType, filterTasksByTag, findRowByTagGroupId, rowReducer, tasksReducer} from "./RowStateManager";
+import {TaskActionType, filterTasksByTag, findRowByTagGroupId, rowReducer, tasksReducer} from "./RowStateManager";
 import {sampleTagGroup, taskSample} from "./SampleBuilder";
 
 type Props = {
@@ -15,26 +15,29 @@ type Props = {
 
 const BoardBodyContainer = (props: Props) => {
 
-    const [tagGroups, setTagGroups] = useState<TagGroup[]>([sampleTagGroup("Todo"), sampleTagGroup("in discussion"), sampleTagGroup("in progress"), sampleTagGroup("finished")]);
+    const sampleGroups = useMemo(() => {
+        return [sampleTagGroup("Todo"), sampleTagGroup("in discussion"), sampleTagGroup("in progress"), sampleTagGroup("finished")]
+    }, [])
+
+    const [tagGroups, setTagGroups] = useState<TagGroup[]>(sampleGroups);
 
     const sampleTasks = [taskSample("11111", tagGroups[0]), taskSample("22222", tagGroups[1]), taskSample("33333", tagGroups[2]), taskSample("44444", tagGroups[3])];
-    //const [allTasks, setAllTasks] = useReducer(tasksReducer, sampleTasks);
-    //const initialRow = useMemo(() => filterTasksByTag(allTasks, tagGroups), [allTasks]);
+
     const initialRow = filterTasksByTag(sampleTasks, tagGroups);
     const [rows, setRows] = useReducer(rowReducer, initialRow);
 
     const onChangeTitle = (event: ChangeEvent<HTMLInputElement>, id: string, index: number) => {
-        setRows({type: ActionType.changeTitle, payload: event.target.value, id: id, index: index});
+        setRows({type: TaskActionType.changeTitle, payload: event.target.value, id: id, index: index});
     }
 
     const onChangeDescription = (event: ChangeEvent<HTMLInputElement>, id: string, index: number) => {
-        setRows({type: ActionType.changeDescription, payload: event.target.value, id: id, index: index});
+        setRows({type: TaskActionType.changeDescription, payload: event.target.value, id: id, index: index});
     }
 
     const onClickAdd = (index: number, tagGroup?: TagGroup ) => {
         const task = new Task(crypto.randomUUID(), "title", "desc");
         task.tagGroup = tagGroup;
-        setRows({type: ActionType.addTask, payload: task});
+        setRows({type: TaskActionType.addTask, payload: task, index: index});
     }
 
     const reorder = (list: Task[], startIndex: number, endIndex: number) => {
@@ -45,32 +48,47 @@ const BoardBodyContainer = (props: Props) => {
         return result;
     };
 
-    const move = (
-        source: Task[],
-        destination: DraggableLocation,
+    const moveBetweenRows = (
+        originArr: Task[],
+        destination: Task[],
         droppableSource: DraggableLocation,
         droppableDestination: DraggableLocation
     ) => {
-
-        return;
+        const originClone = Array.from(originArr);
+        const destClone = Array.from(destination);
+        const [removed] = originClone.splice(droppableSource.index, 1);
+        removed.tagGroup = tagGroups[droppableDestination.index];
+        console.log(removed.tagGroup)
+        destClone.splice(droppableDestination.index, 0, removed);
+        const result = {origin: originClone, goal: destClone};
+        return result;
     };
+
+    const onClickRemove = (taskId: string, rowNum: number) => {
+        setRows({type: TaskActionType.remove, payload: taskId, index: rowNum})
+    }
 
     const onDragEnd = (result: DropResult) => {
         const { source, destination } = result;
 
         if (!destination) return;
 
-        const from = source.droppableId;
-        const to = destination.droppableId;
-        const { row, rowIndex } = findRowByTagGroupId(rows, from || to);
-        if (!row) return;
+        const from = +source.droppableId;
+        const to = +destination.droppableId;
+        // const { row, rowIndex } = findRowByTagGroupId(rows, from || to);
+        // console.log(row);
+        // if (!row) return;
         if (from === to) {
-            const newRowOrder = reorder(row, source.index, destination.index);
+            const newRowOrder = reorder(rows[from], source.index, destination.index);
             const newRows = [...rows];
-            newRows[rowIndex] = newRowOrder;
-            setRows({payload: newRows, type: ActionType.replace});
+            newRows[from] = newRowOrder;
+            setRows({payload: newRows, type: TaskActionType.replace});
         } else {
-
+            const result = moveBetweenRows(rows[from], rows[to], source, destination);
+            const newRows = [...rows];
+            newRows[from] = result.origin;
+            newRows[to] = result.goal;
+            setRows({type: TaskActionType.replace, payload: newRows});
         }
     }
 
@@ -79,18 +97,19 @@ const BoardBodyContainer = (props: Props) => {
             <Grid container direction={'row'}>
                 <DragDropContext onDragEnd={onDragEnd}>
             {rows.length ? (rows.map((row, index) => {
-                const tagGroup = row[0].tagGroup;
+                //const tagGroup = row[0].tagGroup;
                 return (
-                    <Droppable droppableId={tagGroup?.groupId || 'no tag'}>
+                    <Droppable droppableId={`${index}`} key={index}>
                         {(provided) => (
                             <div
                                 ref={provided.innerRef}
                                 {...provided.droppableProps}
+                                style={{marginRight: "auto"}}
                             >
                                 <Grid
                                     item
                                     xs={'auto'}
-                                    key={tagGroup?.groupId || 'no tag'}
+                                    //key={tagGroup?.groupId || 'no tag'}
                                     style={{
                                         marginLeft: 4,
                                         marginTop: 4,
@@ -104,6 +123,7 @@ const BoardBodyContainer = (props: Props) => {
                                         onChangeTitle={onChangeTitle}
                                         onClickAdd={onClickAdd}
                                         tasks={row}
+                                        onClickRemove={onClickRemove}
                                     />
                                 </Grid>
                                 {provided.placeholder}

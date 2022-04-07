@@ -1,5 +1,5 @@
-import {ButtonBase, FormControl, Grid, Paper, TextField, Typography} from "@mui/material";
-import React, {ChangeEvent, useCallback, useState} from "react";
+import { Grid, Paper, Typography} from "@mui/material";
+import React, {ChangeEvent, useState} from "react";
 import TagContainer from "../TaskProperty/TagContainer";
 import Task from "../entity/Task";
 import TaskImgContainer from "../TaskProperty/TaskImgContainer";
@@ -10,10 +10,11 @@ type Props = {
     task: Task;
     onChangeTitle: (event: ChangeEvent<HTMLInputElement>, id: string, index: number) => void;
     onChangeDescription: (event: ChangeEvent<HTMLInputElement>, id: string, index: number) => void;
+    onClickRemove: (taskId: string, rowNum: number) => void;
 }
 const TaskContainer = (props: Props) => {
 
-    const {rowIndex, task, onChangeDescription, onChangeTitle} = props;
+    const {rowIndex, task, onChangeDescription, onChangeTitle, onClickRemove} = props;
 
     const [modalOpen, setModalOpen] = useState(false);
 
@@ -55,7 +56,7 @@ const TaskContainer = (props: Props) => {
                             />
                         </Grid>
                         <Grid item>
-                            <Typography sx={{cursor: 'pointer'}} variant="body2">
+                            <Typography sx={{cursor: 'pointer'}} variant="body2" onClick={() => onClickRemove(task.taskId, rowIndex)}>
                                 Remove
                             </Typography>
                         </Grid>

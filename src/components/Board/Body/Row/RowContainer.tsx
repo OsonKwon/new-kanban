@@ -1,21 +1,22 @@
 import TaskContainer from "../Task/container/TaskContainer";
 import Task from "../Task/entity/Task";
-import {ChangeEvent, useCallback, useMemo, useReducer, useState} from "react";
+import {ChangeEvent} from "react";
 import {Button, Grid} from "@mui/material";
 import {Draggable} from "react-beautiful-dnd";
 import TagGroup from "../Task/entity/TagGroup";
-import _ from "lodash"
+
 type Props = {
     onClickAdd: (index: number, tagGroup?: TagGroup) => void;
     onChangeTitle : (event:ChangeEvent<HTMLInputElement>, id: string, index: number) => void;
     onChangeDescription : (event:ChangeEvent<HTMLInputElement>, id: string, index: number) => void;
     tasks: Task[];
     rowIndex: number;
+    onClickRemove: (taskId: string, rowNum: number) => void;
 }
 
 const RowContainer = (props: Props) => {
 
-    const {rowIndex, tasks, onClickAdd, onChangeTitle, onChangeDescription } = props;
+    const {rowIndex, tasks, onClickAdd, onClickRemove, onChangeTitle, onChangeDescription } = props;
     const tagGroup = tasks[0].tagGroup;
     if (!tagGroup) return <></>;
 
@@ -27,8 +28,7 @@ const RowContainer = (props: Props) => {
         >
             {tasks.map((task, index) => {
                 return (
-                    <>
-                        <Draggable draggableId={task.taskId} index={index}>
+                        <Draggable  key={task.taskId} draggableId={task.taskId} index={index}>
                             {provided => (
                                 <div
                                     ref={provided.innerRef}
@@ -36,6 +36,7 @@ const RowContainer = (props: Props) => {
                                     {...provided.dragHandleProps}
                                 >
                                     <TaskContainer
+                                        onClickRemove={onClickRemove}
                                         rowIndex={rowIndex}
                                         onChangeTitle={onChangeTitle}
                                         onChangeDescription={onChangeDescription}
@@ -45,11 +46,9 @@ const RowContainer = (props: Props) => {
                                 </div>
                             )}
                         </Draggable>
-                        <Button onClick={() => onClickAdd(index, tagGroup)}>Add</Button>
-                    </>
                 );
             })}
-
+            <Button onClick={() => onClickAdd(rowIndex, tagGroup)}>Add</Button>
         </Grid>
     );
 }

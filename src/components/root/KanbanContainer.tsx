@@ -1,7 +1,6 @@
 import ProjectBarContainer from "../ProjectBar/ProjectBarContainer";
 import {useCallback, useMemo, useState} from "react";
 import Project from "../ProjectBar/entity/Project";
-import BoardHeaderContainer from "../Board/Header/BoardHeaderContainer";
 import BoardBodyContainer from "../Board/Body/container/BoardBodyContainer";
 import {Box} from "@mui/material";
 
@@ -33,7 +32,7 @@ const KanbanContainer = () => {
     return (
         <div>
             <ProjectBarContainer title={projectTitle} projects={projects}/>
-            <BoardHeaderContainer projectId={projectId} title={projectTitle}/>
+            {/*<BoardHeaderContainer projectId={projectId} title={projectTitle}/>*/}
             <Box alignItems={"center"} alignContent={"center"}>
             <BoardBodyContainer projectId={projectId}/>
             </Box>
