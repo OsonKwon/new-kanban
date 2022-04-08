@@ -1,5 +1,5 @@
 import { Grid, Paper, Typography} from "@mui/material";
-import React, {ChangeEvent, useState} from "react";
+import React, {ChangeEvent, useCallback, useState} from "react";
 import TagContainer from "../TaskProperty/TagContainer";
 import Task from "../entity/Task";
 import TaskImgContainer from "../TaskProperty/TaskImgContainer";
@@ -12,6 +12,7 @@ type Props = {
     onChangeDescription: (event: ChangeEvent<HTMLInputElement>, id: string, index: number) => void;
     onClickRemove: (taskId: string, rowNum: number) => void;
 }
+
 const TaskContainer = (props: Props) => {
 
     const {rowIndex, task, onChangeDescription, onChangeTitle, onClickRemove} = props;
@@ -19,9 +20,9 @@ const TaskContainer = (props: Props) => {
     const [modalOpen, setModalOpen] = useState(false);
 
 
-    const onClickTask = () => {
+    const onClickTask = useCallback(() => {
         setModalOpen(true);
-    }
+    }, []);
 
     // const onClose = () => {
     //     setModalOpen(false);

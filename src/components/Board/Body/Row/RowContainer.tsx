@@ -16,7 +16,7 @@ type Props = {
 
 const RowContainer = (props: Props) => {
 
-    const {rowIndex, tasks, onClickAdd, onClickRemove, onChangeTitle, onChangeDescription } = props;
+    const { rowIndex, tasks, onClickAdd, onClickRemove, onChangeTitle, onChangeDescription } = props;
     const tagGroup = tasks[0].tagGroup;
     if (!tagGroup) return <></>;
 

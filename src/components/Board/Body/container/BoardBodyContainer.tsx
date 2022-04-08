@@ -1,4 +1,4 @@
-import {ChangeEvent, useMemo, useReducer, useState} from "react";
+import {ChangeEvent, useCallback, useMemo, useReducer, useState} from "react";
 import RowContainer from "../Row/RowContainer";
 import {Grid} from "@mui/material";
 import {DragDropContext, DraggableLocation, Droppable, DropResult} from "react-beautiful-dnd";
@@ -13,40 +13,45 @@ type Props = {
 
 const BoardBodyContainer = (props: Props) => {
 
-    const sampleGroups = useMemo(() => {
+    const sampleGroups =() => {
         return [sampleTagGroup("Todo"), sampleTagGroup("in discussion"), sampleTagGroup("in progress"), sampleTagGroup("finished")]
-    }, [])
+    }
 
     const [tagGroups, setTagGroups] = useState<TagGroup[]>(sampleGroups);
 
-    const sampleTasks = [taskSample("11111", tagGroups[0]), taskSample("22222", tagGroups[1]), taskSample("33333", tagGroups[2]), taskSample("44444", tagGroups[3])];
+    const sampleTasks = useMemo(() => [
+        taskSample("11111", tagGroups[0]),
+        taskSample("22222", tagGroups[1]),
+        taskSample("33333", tagGroups[2]),
+        taskSample("44444", tagGroups[3])
+    ], []);
 
-    const initialRow = filterTasksByTag(sampleTasks, tagGroups);
+    const initialRow = useMemo(() => filterTasksByTag(sampleTasks, tagGroups), [sampleTasks, tagGroups]);
     const [rows, setRows] = useReducer(rowReducer, initialRow);
 
-    const onChangeTitle = (event: ChangeEvent<HTMLInputElement>, id: string, index: number) => {
+    const onChangeTitle = useCallback((event: ChangeEvent<HTMLInputElement>, id: string, index: number) => {
         setRows({type: TaskActionType.changeTitle, payload: event.target.value, id: id, index: index});
-    }
+    }, []);
 
-    const onChangeDescription = (event: ChangeEvent<HTMLInputElement>, id: string, index: number) => {
+    const onChangeDescription = useCallback((event: ChangeEvent<HTMLInputElement>, id: string, index: number) => {
         setRows({type: TaskActionType.changeDescription, payload: event.target.value, id: id, index: index});
-    }
+    }, []);
 
-    const onClickAdd = (index: number, tagGroup?: TagGroup ) => {
+    const onClickAdd = useCallback((index: number, tagGroup?: TagGroup ) => {
         const task = new Task(crypto.randomUUID(), "title", "desc");
         task.tagGroup = tagGroup;
         setRows({type: TaskActionType.addTask, payload: task, index: index});
-    }
+    }, []);
 
-    const reorder = (list: Task[], startIndex: number, endIndex: number) => {
+    const reorder = useCallback((list: Task[], startIndex: number, endIndex: number) => {
         const result = Array.from(list);
         const [removed] = result.splice(startIndex, 1);
         result.splice(endIndex, 0, removed);
 
         return result;
-    };
+    }, []);
 
-    const moveBetweenRows = (
+    const moveBetweenRows = useCallback((
         originArr: Task[],
         destination: Task[],
         droppableSource: DraggableLocation,
@@ -59,13 +64,13 @@ const BoardBodyContainer = (props: Props) => {
         console.log(removed.tagGroup)
         destClone.splice(droppableDestination.index, 0, removed);
         return {origin: originClone, goal: destClone};
-    };
+    }, [tagGroups]);
 
-    const onClickRemove = (taskId: string, rowNum: number) => {
+    const onClickRemove = useCallback((taskId: string, rowNum: number) => {
         setRows({type: TaskActionType.remove, payload: taskId, index: rowNum})
-    }
+    }, []);
 
-    const onDragEnd = (result: DropResult) => {
+    const onDragEnd = useCallback((result: DropResult) => {
         const { source, destination } = result;
 
         if (!destination) return;
@@ -87,7 +92,8 @@ const BoardBodyContainer = (props: Props) => {
             newRows[to] = result.goal;
             setRows({type: TaskActionType.replace, payload: newRows});
         }
-    }
+    }, [rows, moveBetweenRows, reorder]);
+
 
     return (
         <div>

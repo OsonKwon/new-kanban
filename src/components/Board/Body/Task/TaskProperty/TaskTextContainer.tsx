@@ -17,11 +17,11 @@ const TaskTextContainer = (props: Props) => {
 
     const onDoubleClick = useCallback(() => {
         setReadOnly(prev => !prev);
-    }, [readOnly]);
+    }, []);
 
     const onEnter = useCallback((event: React.KeyboardEvent<HTMLDivElement>) => {
         return event.key === 'Enter' ? setReadOnly(prev => !prev) : undefined;
-    }, [readOnly]);
+    }, []);
 
     return (
         <Grid item xs>
