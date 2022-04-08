@@ -53,9 +53,9 @@ const TaskContainer = (props: Props) => {
                             onChangeDescription={onChangeDescription}
                         />
                         <Grid item>
-                            {task.tagGroup ? (
+                            {task.tagGroups ? (
                                 <TagContainer
-                                    tagGroup={task.tagGroup}
+                                    tagGroup={task.tagGroups}
                                 />
                             ) : null}
                         </Grid>

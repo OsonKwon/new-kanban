@@ -5,7 +5,7 @@ import {DragDropContext, DraggableLocation, Droppable, DropResult} from "react-b
 import TagGroup from "../Task/entity/TagGroup";
 import Task from "../Task/entity/Task";
 import {filterTasksByTag, columnReducer, ColumnActionType} from "./ColumnStateManager";
-import {sampleTagGroup, taskSample} from "./SampleBuilder";
+import {sampleProcessTagGroup, taskSample} from "./SampleBuilder";
 import ColumnHeaderContainer from "../column/ColumnHeaderContainer";
 import AddIcon from "@mui/icons-material/Add";
 type Props = {
@@ -15,10 +15,13 @@ type Props = {
 const BoardBodyContainer = (props: Props) => {
 
     const sampleGroups =() => {
-        return [sampleTagGroup("Todo"), sampleTagGroup("in discussion"), sampleTagGroup("in progress"), sampleTagGroup("finished")]
+        return [sampleProcessTagGroup("Todo"), sampleProcessTagGroup("in discussion"), sampleProcessTagGroup("in progress"), sampleProcessTagGroup("finished")]
     }
 
     const [tagGroups, setTagGroups] = useState<TagGroup[]>(sampleGroups);
+
+    const [columnGroup, setColumnGroup] = useState<TagGroup>(sampleProcessTagGroup('process'));
+    const [rowGroup, setRowGroup] = useState<TagGroup>(sampleProcessTagGroup('row'));
 
     const sampleTasks = useMemo(() => [
         taskSample("11111", tagGroups[0]),
@@ -44,7 +47,7 @@ const BoardBodyContainer = (props: Props) => {
 
     const onClickAdd = useCallback((index: number, tagGroup?: TagGroup ) => {
         const task = new Task(crypto.randomUUID(), "title", "desc");
-        task.tagGroup = tagGroup;
+        task.tagGroups = tagGroup;
         setColumns({type: ColumnActionType.addTask, payload: task, index: index});
     }, []);
 
@@ -65,8 +68,8 @@ const BoardBodyContainer = (props: Props) => {
         const originClone = Array.from(originArr);
         const destClone = Array.from(destinationArr);
         const [removed] = originClone.splice(origin.index, 1);
-        removed.tagGroup = tagGroups[+destination.droppableId];
-        console.log(removed.tagGroup);
+        removed.tagGroups = tagGroups[+destination.droppableId];
+        console.log(removed.tagGroups);
         destClone.splice(destination.index, 0, removed);
         return {origin: originClone, goal: destClone};
     }, [tagGroups]);
@@ -102,12 +105,11 @@ const BoardBodyContainer = (props: Props) => {
 // FIXME: droppableId should be tagGroupId
     return (
         <Grid container direction={'row'}>
-            <DragDropContext onDragEnd={onDragEnd}>
-                {columns.length ? (columns.map((column, index) => {
+            <DragDropContext onDragEnd={onDragEnd} >
+                {tagGroups.length ? (tagGroups.map((tagGroup, index) => {
 
-                    //const tagGroup = column[0].tagGroup;
                     return (
-                        <Droppable droppableId={`${index}`} key={index}>
+                        <Droppable droppableId={tagGroup.groupId} key={index}>
                             {(provided) => (
                                 <div
                                     ref={provided.innerRef}
@@ -118,7 +120,6 @@ const BoardBodyContainer = (props: Props) => {
                                         item
                                         xs={'auto'}
                                         sx={{ borderRadius: 2}}
-                                        //key={tagGroup?.groupId || 'no tag'}
                                         style={{
                                             marginLeft: 10,
                                             marginTop: 10,
@@ -127,14 +128,13 @@ const BoardBodyContainer = (props: Props) => {
                                             paddingTop: 4,
                                         }}
                                     >
-                                        <ColumnHeaderContainer name={tagGroups[index].groupName}/>
+                                        <ColumnHeaderContainer name={tagGroup.groupName}/>
                                         <ColumnContainer
-                                            tagGroup={tagGroups[index]}
+                                            tagGroup={tagGroup}
                                             columnIndex={index}
                                             onChangeDescription={onChangeDescription}
                                             onChangeTitle={onChangeTitle}
                                             onClickAdd={onClickAdd}
-                                            tasks={column}
                                             onClickRemove={onClickRemove}
                                         />
                                     </Grid>
@@ -148,7 +148,7 @@ const BoardBodyContainer = (props: Props) => {
             <Grid
                 item
                 xs={'auto'}
-                //key={tagGroup?.groupId || 'no tag'}
+                //key={tagGroups?.groupId || 'no tag'}
                 style={{
                     margin: "auto",
                     padding: 'auto',

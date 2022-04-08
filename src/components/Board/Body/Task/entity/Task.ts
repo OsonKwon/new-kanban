@@ -5,7 +5,7 @@ class Task {
     title: string;
     description: string;
     creationDate: number;
-    tagGroup?: TagGroup;
+    tagGroups?: TagGroup;
 
     constructor(taskId: string, title?: string, description?: string, creationDate?: number) {
         this.taskId = taskId;

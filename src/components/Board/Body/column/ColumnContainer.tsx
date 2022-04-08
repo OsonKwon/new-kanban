@@ -1,15 +1,16 @@
 import TaskContainer from "../Task/container/TaskContainer";
 import Task from "../Task/entity/Task";
-import {ChangeEvent} from "react";
+import {ChangeEvent, useMemo, useReducer} from "react";
 import {Button, Grid} from "@mui/material";
 import {Draggable} from "react-beautiful-dnd";
 import TagGroup from "../Task/entity/TagGroup";
+import {tasksReducer} from "../container/ColumnStateManager";
+import {taskSample} from "../container/SampleBuilder";
 
 type Props = {
     onClickAdd: (index: number, tagGroup?: TagGroup) => void;
     onChangeTitle : (event:ChangeEvent<HTMLInputElement>, id: string, index: number) => void;
     onChangeDescription : (event:ChangeEvent<HTMLInputElement>, id: string, index: number) => void;
-    tasks: Task[];
     columnIndex: number;
     onClickRemove: (taskId: string, columnNum: number) => void;
     tagGroup: TagGroup;
@@ -17,8 +18,11 @@ type Props = {
 
 const ColumnContainer = (props: Props) => {
 
-    const { columnIndex, tasks, tagGroup, onClickAdd, onClickRemove, onChangeTitle, onChangeDescription } = props;
+    const { columnIndex, tagGroup, onClickAdd, onClickRemove, onChangeTitle, onChangeDescription } = props;
 
+    const sample = useMemo(() => [taskSample(`${tagGroup.groupName} sample`, tagGroup)], []);
+
+    const [tasks, setTasks] = useReducer(tasksReducer, sample);
     return (
         <Grid
             container

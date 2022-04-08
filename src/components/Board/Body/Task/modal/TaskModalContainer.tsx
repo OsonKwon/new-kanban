@@ -32,7 +32,7 @@ const TaskModalContainer = (props: Props) => {
                 <Box minHeight={500}>
                     <Grid container direction={"column"}>
                         <Grid item>
-                            <Typography>{task.tagGroup?.groupName} : </Typography>
+                            <Typography>{task.tagGroups?.groupName} : </Typography>
                         </Grid>
                     </Grid>
                     <TextField

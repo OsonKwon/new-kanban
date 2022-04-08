@@ -19,7 +19,7 @@ export interface ColumnAction {
 export const filterTasksByTag = (tasks: Task[], tagGroups: TagGroup[]) => {
     const columns: Task[][] = [];
     tagGroups.forEach((tagGroup) => {
-        const tasksWithTag = tasks.filter((task) => task.tagGroup?.groupId === tagGroup.groupId);
+        const tasksWithTag = tasks.filter((task) => task.tagGroups?.groupId === tagGroup.groupId);
         columns.push(tasksWithTag);
     })
     return columns;
@@ -97,7 +97,7 @@ export const tasksReducer = (state: Task[], action: ColumnAction) => {
             return newState;
 
         case ColumnActionType.replace:
-            return payload;
+            return payload as Task[];
 
         default:
             return state;
@@ -106,7 +106,7 @@ export const tasksReducer = (state: Task[], action: ColumnAction) => {
 
 export const findColumnByTagGroupId = (columns: Task[][], groupId: string) => {
 
-    const foundColumn = columns.find((taskArr) => taskArr[0].tagGroup?.groupId === groupId);
+    const foundColumn = columns.find((taskArr) => taskArr[0].tagGroups?.groupId === groupId);
     if (!foundColumn) throw new Error();
     const columnIndex = columns.indexOf(foundColumn);
     return { column: foundColumn, rowIndex: columnIndex };

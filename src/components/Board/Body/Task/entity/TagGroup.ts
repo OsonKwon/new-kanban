@@ -4,7 +4,6 @@ class TagGroup {
     groupId: string;
     groupName: string;
     tags: Tag[] = [];
-    value?: Tag;
 
     constructor(groupName: string) {
         this.groupId = crypto.randomUUID();

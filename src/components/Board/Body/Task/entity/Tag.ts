@@ -2,10 +2,11 @@
 export default class Tag {
     id: string;
     name: string;
-    parentGroupId?: string;
+    parentId: string;
 
-    constructor(name?: string) {
+    constructor(parentId: string, name?: string) {
         this.id = crypto.randomUUID();
+        this.parentId = parentId;
         this.name = name || 'enter name';
     }
 }
