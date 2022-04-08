@@ -27,6 +27,10 @@ const BoardBodyContainer = (props: Props) => {
     ], []);
 
     const initialRow = useMemo(() => filterTasksByTag(sampleTasks, tagGroups), [sampleTasks, tagGroups]);
+
+    // need to rebuild state management.
+    // only tagGroups should be held here and rows should be managed in RowContainer.
+    // FIXME
     const [rows, setRows] = useReducer(rowReducer, initialRow);
 
     const onChangeTitle = useCallback((event: ChangeEvent<HTMLInputElement>, id: string, index: number) => {
@@ -61,7 +65,7 @@ const BoardBodyContainer = (props: Props) => {
         const destClone = Array.from(destination);
         const [removed] = originClone.splice(droppableSource.index, 1);
         removed.tagGroup = tagGroups[droppableDestination.index];
-        console.log(removed.tagGroup)
+        console.log(removed.tagGroup);
         destClone.splice(droppableDestination.index, 0, removed);
         return {origin: originClone, goal: destClone};
     }, [tagGroups]);
