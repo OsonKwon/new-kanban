@@ -14,20 +14,14 @@ type Props = {
 
 const BoardBodyContainer = (props: Props) => {
 
-    const sampleGroups =() => {
-        return [sampleProcessTagGroup("Todo"), sampleProcessTagGroup("in discussion"), sampleProcessTagGroup("in progress"), sampleProcessTagGroup("finished")]
-    }
-
-    const [tagGroups, setTagGroups] = useState<TagGroup[]>(sampleGroups);
-
     const [columnGroup, setColumnGroup] = useState<TagGroup>(sampleProcessTagGroup('process'));
     const [rowGroup, setRowGroup] = useState<TagGroup>(sampleProcessTagGroup('row'));
 
     const sampleTasks = useMemo(() => [
-        taskSample("11111", tagGroups[0]),
-        taskSample("22222", tagGroups[1]),
-        taskSample("33333", tagGroups[2]),
-        taskSample("44444", tagGroups[3])
+        taskSample("11111", [columnGroup, rowGroup]),
+        taskSample("22222", [columnGroup, rowGroup]),
+        taskSample("33333", [columnGroup, rowGroup]),
+        taskSample("44444", [columnGroup, rowGroup]),
     ], []);
 
     const initialColumns = useMemo(() => filterTasksByTag(sampleTasks, tagGroups), [sampleTasks, tagGroups]);
@@ -106,10 +100,9 @@ const BoardBodyContainer = (props: Props) => {
     return (
         <Grid container direction={'row'}>
             <DragDropContext onDragEnd={onDragEnd} >
-                {tagGroups.length ? (tagGroups.map((tagGroup, index) => {
-
+                {columnGroup.tags.length ? (columnGroup.tags.map((tag, index) => {
                     return (
-                        <Droppable droppableId={tagGroup.groupId} key={index}>
+                        <Droppable droppableId={tag.tagId} key={index}>
                             {(provided) => (
                                 <div
                                     ref={provided.innerRef}
@@ -128,9 +121,9 @@ const BoardBodyContainer = (props: Props) => {
                                             paddingTop: 4,
                                         }}
                                     >
-                                        <ColumnHeaderContainer name={tagGroup.groupName}/>
+                                        <ColumnHeaderContainer name={tag.name}/>
                                         <ColumnContainer
-                                            tagGroup={tagGroup}
+                                            tagGroup={tag}
                                             columnIndex={index}
                                             onChangeDescription={onChangeDescription}
                                             onChangeTitle={onChangeTitle}

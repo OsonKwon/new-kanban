@@ -1,11 +1,14 @@
 import TagGroup from "./TagGroup";
+import Tag from "./Tag";
 
 class Task {
     taskId: string;
     title: string;
     description: string;
     creationDate: number;
-    tagGroups?: TagGroup;
+    dueDate?: number;
+    tags: Tag[] = [];
+    tagGroups?: TagGroup[] = [];
 
     constructor(taskId: string, title?: string, description?: string, creationDate?: number) {
         this.taskId = taskId;
