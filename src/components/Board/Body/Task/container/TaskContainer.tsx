@@ -23,9 +23,9 @@ const TaskContainer = (props: Props) => {
         setModalOpen(true);
     }
 
-    const onClose = () => {
-        setModalOpen(false);
-    }
+    // const onClose = () => {
+    //     setModalOpen(false);
+    // }
 
     return (
         <Paper
@@ -51,12 +51,15 @@ const TaskContainer = (props: Props) => {
                             onChangeDescription={onChangeDescription}
                         />
                         <Grid item>
-                            <TagContainer
-                                tagGroup={task.tagGroup}
-                            />
+                            {task.tagGroup ? (
+                                <TagContainer
+                                    tagGroup={task.tagGroup}
+                                />
+                            ) : null}
                         </Grid>
                         <Grid item>
-                            <Typography sx={{cursor: 'pointer'}} variant="body2" onClick={() => onClickRemove(task.taskId, rowIndex)}>
+                            <Typography sx={{cursor: 'pointer'}} variant="body2"
+                                        onClick={() => onClickRemove(task.taskId, rowIndex)}>
                                 Remove
                             </Typography>
                         </Grid>

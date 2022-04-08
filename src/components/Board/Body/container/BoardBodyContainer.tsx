@@ -2,11 +2,9 @@ import {ChangeEvent, useMemo, useReducer, useState} from "react";
 import RowContainer from "../Row/RowContainer";
 import {Grid} from "@mui/material";
 import {DragDropContext, DraggableLocation, Droppable, DropResult} from "react-beautiful-dnd";
-import Tag from "../Task/entity/Tag";
 import TagGroup from "../Task/entity/TagGroup";
 import Task from "../Task/entity/Task";
-import _ from "lodash";
-import {TaskActionType, filterTasksByTag, findRowByTagGroupId, rowReducer, tasksReducer} from "./RowStateManager";
+import {filterTasksByTag, rowReducer, TaskActionType} from "./RowStateManager";
 import {sampleTagGroup, taskSample} from "./SampleBuilder";
 
 type Props = {
@@ -60,8 +58,7 @@ const BoardBodyContainer = (props: Props) => {
         removed.tagGroup = tagGroups[droppableDestination.index];
         console.log(removed.tagGroup)
         destClone.splice(droppableDestination.index, 0, removed);
-        const result = {origin: originClone, goal: destClone};
-        return result;
+        return {origin: originClone, goal: destClone};
     };
 
     const onClickRemove = (taskId: string, rowNum: number) => {

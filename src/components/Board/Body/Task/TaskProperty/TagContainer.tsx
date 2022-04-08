@@ -3,7 +3,7 @@ import {FormEvent, useCallback, useState} from "react";
 import TagGroup from "../entity/TagGroup";
 
 type Props = {
-    tagGroup?: TagGroup;
+    tagGroup: TagGroup;
 }
 const TagContainer = (props: Props) => {
 
@@ -18,7 +18,7 @@ const TagContainer = (props: Props) => {
 
     const onClickTag = useCallback(() => {
         setEditable(editable => !editable);
-    }, [editable]);
+    }, []);
 
     return (
         <Chip
