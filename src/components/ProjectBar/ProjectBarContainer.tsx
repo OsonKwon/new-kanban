@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useMemo} from "react";
 import {
     Box,
     IconButton,
@@ -10,7 +10,7 @@ import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
+import AddIcon from '@mui/icons-material/Add';
 import Project from "./entity/Project";
 
 const drawerWidth = 240;
@@ -47,13 +47,20 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 }));
 
 type Props = {
-    title: string;
+    projectId: string;
     projects: Project[];
 }
 export default function ProjectBarContainer(props: Props) {
     const theme = useTheme();
 
     const [open, setOpen] = React.useState(false);
+
+    const { projectId, projects } = props;
+
+    const project = useMemo(() => projects.find((project) => project.projectId === projectId), [projectId]);
+
+    if (!project) throw new Error(`ProjectBarContainer -> there's no project with project id: ${projectId}`);
+
 
     const toggleDrawer = () => {
         setOpen(open => !open);
@@ -74,7 +81,7 @@ export default function ProjectBarContainer(props: Props) {
                         <MenuIcon/>
                     </IconButton>
                     <Typography variant="h6" noWrap component="div">
-                        Persistent drawer
+                        {project.title}
                     </Typography>
                 </Toolbar>
             </AppBar>
@@ -98,22 +105,23 @@ export default function ProjectBarContainer(props: Props) {
                 </DrawerHeader>
                 <Divider/>
                 <List>
-                    {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-                        <ListItem button key={text}>
+                    {projects.map((project, index) => (
+                        <ListItem button key={project.projectId}>
                             <ListItemIcon>
-                                {index % 2 === 0 ? <InboxIcon/> : <MailIcon/>}
+                                <InboxIcon/>
                             </ListItemIcon>
-                            <ListItemText primary={text}/>
+                            <ListItemText primary={project.title}/>
                         </ListItem>
                     ))}
+                    <ListItem button key={'addProject'}>
+                        <ListItemIcon><AddIcon/></ListItemIcon>
+                        <ListItemText primary={'Add project'}/>
+                    </ListItem>
                 </List>
                 <Divider/>
                 <List>
-                    {['All mail', 'Trash', 'Spam'].map((text, index) => (
+                    {['Trash', 'preferences'].map((text) => (
                         <ListItem button key={text}>
-                            <ListItemIcon>
-                                {index % 2 === 0 ? <InboxIcon/> : <MailIcon/>}
-                            </ListItemIcon>
                             <ListItemText primary={text}/>
                         </ListItem>
                     ))}

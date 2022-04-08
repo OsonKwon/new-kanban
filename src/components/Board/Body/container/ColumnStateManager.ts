@@ -1,7 +1,7 @@
 import Task from "../Task/entity/Task";
 import TagGroup from "../Task/entity/TagGroup";
 
-export enum TaskActionType {
+export enum ColumnActionType {
     changeTitle = 'changeTitle',
     changeDescription = 'changeDescription',
     addTask = 'addTask',
@@ -9,59 +9,59 @@ export enum TaskActionType {
     remove = 'remove',
 
 }
-export interface RowAction {
-    type: string;
+export interface ColumnAction {
+    type: ColumnActionType;
     id?: string;
     index?: number;
     payload: unknown;
 }
 
 export const filterTasksByTag = (tasks: Task[], tagGroups: TagGroup[]) => {
-    const row: Task[][] = [];
+    const columns: Task[][] = [];
     tagGroups.forEach((tagGroup) => {
         const tasksWithTag = tasks.filter((task) => task.tagGroup?.groupId === tagGroup.groupId);
-        row.push(tasksWithTag);
+        columns.push(tasksWithTag);
     })
-    return row;
+    return columns;
 }
 
-export const rowReducer = (state: Task[][], action: RowAction) => {
+export const columnReducer = (state: Task[][], action: ColumnAction) => {
     const {type, payload, id, index} = action;
     let newState: Task[][] = [...state];
-    let newRow: Task[] = [];
+    let newColumn: Task[] = [];
     switch (type) {
-        case TaskActionType.changeTitle:
+        case ColumnActionType.changeTitle:
             if (index === undefined) return state;
-            newRow = state[index].map((task) => {
+            newColumn = state[index].map((task) => {
                 if (task.taskId === id) {
                     task.title = payload as string;
                 }
                 return task;
             })
-            newState[index] = newRow;
+            newState[index] = newColumn;
             return newState;
 
-        case TaskActionType.changeDescription:
+        case ColumnActionType.changeDescription:
             if (index === undefined) return state;
-            newRow = state[index].map((task) => {
+            newColumn = state[index].map((task) => {
                 if (task.taskId === id) {
                     task.description = payload as string;
                 }
                 return task;
             })
-            newState[index] = newRow;
+            newState[index] = newColumn;
             return newState;
 
-        case(TaskActionType.replace):
+        case(ColumnActionType.replace):
             return payload as Task[][];
 
-        case(TaskActionType.addTask):
+        case(ColumnActionType.addTask):
             if (index === undefined) return state;
-            newRow = [...state[index], payload as Task];
-            newState[index] = newRow;
+            newColumn = [...state[index], payload as Task];
+            newState[index] = newColumn;
             return newState;
 
-        case (TaskActionType.remove):
+        case (ColumnActionType.remove):
             if (index === undefined) return state;
             newState[index] = newState[index].filter((task) => task.taskId !== payload as string);
             return newState;
@@ -70,11 +70,11 @@ export const rowReducer = (state: Task[][], action: RowAction) => {
     }
 }
 
-export const tasksReducer = (state: Task[], action: RowAction) => {
+export const tasksReducer = (state: Task[], action: ColumnAction) => {
     const {type, payload, id} = action;
     let newState: Task[] = [];
     switch (type) {
-        case TaskActionType.changeTitle:
+        case ColumnActionType.changeTitle:
             newState = state.map((task) => {
                 if (task.taskId === id) {
                     task.title = payload as string;
@@ -83,7 +83,7 @@ export const tasksReducer = (state: Task[], action: RowAction) => {
             })
             return newState;
 
-        case TaskActionType.changeDescription:
+        case ColumnActionType.changeDescription:
             newState = state.map((task) => {
                 if (task.taskId === id) {
                     task.description = payload as string;
@@ -92,11 +92,11 @@ export const tasksReducer = (state: Task[], action: RowAction) => {
             })
             return newState;
 
-        case TaskActionType.addTask:
+        case ColumnActionType.addTask:
             newState = [...state, payload as Task];
             return newState;
 
-        case TaskActionType.replace:
+        case ColumnActionType.replace:
             return payload;
 
         default:
@@ -104,10 +104,10 @@ export const tasksReducer = (state: Task[], action: RowAction) => {
     }
 }
 
-export const findRowByTagGroupId = (rows: Task[][], groupId: string) => {
+export const findColumnByTagGroupId = (columns: Task[][], groupId: string) => {
 
-    const foundRow = rows.find((taskArr) => taskArr[0].tagGroup?.groupId === groupId);
-    if (!foundRow) throw new Error();
-    const rowIndex = rows.indexOf(foundRow);
-    return { row: foundRow, rowIndex: rowIndex };
+    const foundColumn = columns.find((taskArr) => taskArr[0].tagGroup?.groupId === groupId);
+    if (!foundColumn) throw new Error();
+    const columnIndex = columns.indexOf(foundColumn);
+    return { column: foundColumn, rowIndex: columnIndex };
 }

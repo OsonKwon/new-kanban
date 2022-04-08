@@ -1,12 +1,13 @@
 import {ChangeEvent, useCallback, useMemo, useReducer, useState} from "react";
-import RowContainer from "../Row/RowContainer";
-import {Grid} from "@mui/material";
+import ColumnContainer from "../column/ColumnContainer";
+import {Button, Grid} from "@mui/material";
 import {DragDropContext, DraggableLocation, Droppable, DropResult} from "react-beautiful-dnd";
 import TagGroup from "../Task/entity/TagGroup";
 import Task from "../Task/entity/Task";
-import {filterTasksByTag, rowReducer, TaskActionType} from "./RowStateManager";
+import {filterTasksByTag, columnReducer, ColumnActionType} from "./ColumnStateManager";
 import {sampleTagGroup, taskSample} from "./SampleBuilder";
-
+import ColumnHeaderContainer from "../column/ColumnHeaderContainer";
+import AddIcon from "@mui/icons-material/Add";
 type Props = {
     projectId: string;
 }
@@ -26,25 +27,25 @@ const BoardBodyContainer = (props: Props) => {
         taskSample("44444", tagGroups[3])
     ], []);
 
-    const initialRow = useMemo(() => filterTasksByTag(sampleTasks, tagGroups), [sampleTasks, tagGroups]);
+    const initialColumns = useMemo(() => filterTasksByTag(sampleTasks, tagGroups), [sampleTasks, tagGroups]);
 
     // need to rebuild state management.
-    // only tagGroups should be held here and rows should be managed in RowContainer.
+    // only tagGroups should be held here and columns should be managed in ColumnContainer.
     // FIXME
-    const [rows, setRows] = useReducer(rowReducer, initialRow);
+    const [columns, setColumns] = useReducer(columnReducer, initialColumns);
 
     const onChangeTitle = useCallback((event: ChangeEvent<HTMLInputElement>, id: string, index: number) => {
-        setRows({type: TaskActionType.changeTitle, payload: event.target.value, id: id, index: index});
+        setColumns({type: ColumnActionType.changeTitle, payload: event.target.value, id: id, index: index});
     }, []);
 
     const onChangeDescription = useCallback((event: ChangeEvent<HTMLInputElement>, id: string, index: number) => {
-        setRows({type: TaskActionType.changeDescription, payload: event.target.value, id: id, index: index});
+        setColumns({type: ColumnActionType.changeDescription, payload: event.target.value, id: id, index: index});
     }, []);
 
     const onClickAdd = useCallback((index: number, tagGroup?: TagGroup ) => {
         const task = new Task(crypto.randomUUID(), "title", "desc");
         task.tagGroup = tagGroup;
-        setRows({type: TaskActionType.addTask, payload: task, index: index});
+        setColumns({type: ColumnActionType.addTask, payload: task, index: index});
     }, []);
 
     const reorder = useCallback((list: Task[], startIndex: number, endIndex: number) => {
@@ -55,23 +56,23 @@ const BoardBodyContainer = (props: Props) => {
         return result;
     }, []);
 
-    const moveBetweenRows = useCallback((
+    const moveBetweenColumns = useCallback((
         originArr: Task[],
-        destination: Task[],
-        droppableSource: DraggableLocation,
-        droppableDestination: DraggableLocation
+        destinationArr: Task[],
+        origin: DraggableLocation,
+        destination: DraggableLocation
     ) => {
         const originClone = Array.from(originArr);
-        const destClone = Array.from(destination);
-        const [removed] = originClone.splice(droppableSource.index, 1);
-        removed.tagGroup = tagGroups[droppableDestination.index];
+        const destClone = Array.from(destinationArr);
+        const [removed] = originClone.splice(origin.index, 1);
+        removed.tagGroup = tagGroups[+destination.droppableId];
         console.log(removed.tagGroup);
-        destClone.splice(droppableDestination.index, 0, removed);
+        destClone.splice(destination.index, 0, removed);
         return {origin: originClone, goal: destClone};
     }, [tagGroups]);
 
-    const onClickRemove = useCallback((taskId: string, rowNum: number) => {
-        setRows({type: TaskActionType.remove, payload: taskId, index: rowNum})
+    const onClickRemove = useCallback((taskId: string, columnNum: number) => {
+        setColumns({type: ColumnActionType.remove, payload: taskId, index: columnNum})
     }, []);
 
     const onDragEnd = useCallback((result: DropResult) => {
@@ -81,67 +82,101 @@ const BoardBodyContainer = (props: Props) => {
 
         const from = +source.droppableId;
         const to = +destination.droppableId;
-        // const { row, rowIndex } = findRowByTagGroupId(rows, from || to);
-        // console.log(row);
-        // if (!row) return;
+        // const { column, rowIndex } = findRowByTagGroupId(columns, from || to);
+        // console.log(column);
+        // if (!column) return;
         if (from === to) {
-            const newRowOrder = reorder(rows[from], source.index, destination.index);
-            const newRows = [...rows];
-            newRows[from] = newRowOrder;
-            setRows({payload: newRows, type: TaskActionType.replace});
+            const newColumnOrder = reorder(columns[from], source.index, destination.index);
+            const newColumns = [...columns];
+            newColumns[from] = newColumnOrder;
+            setColumns({payload: newColumns, type: ColumnActionType.replace});
         } else {
-            const result = moveBetweenRows(rows[from], rows[to], source, destination);
-            const newRows = [...rows];
-            newRows[from] = result.origin;
-            newRows[to] = result.goal;
-            setRows({type: TaskActionType.replace, payload: newRows});
+            const result = moveBetweenColumns(columns[from], columns[to], source, destination);
+            const newColumns = [...columns];
+            newColumns[from] = result.origin;
+            newColumns[to] = result.goal;
+            setColumns({type: ColumnActionType.replace, payload: newColumns});
         }
-    }, [rows, moveBetweenRows, reorder]);
+    }, [columns, moveBetweenColumns, reorder]);
 
-
+// FIXME: droppableId should be tagGroupId
     return (
-        <div>
-            <Grid container direction={'row'}>
-                <DragDropContext onDragEnd={onDragEnd}>
-            {rows.length ? (rows.map((row, index) => {
-                //const tagGroup = row[0].tagGroup;
-                return (
-                    <Droppable droppableId={`${index}`} key={index}>
-                        {(provided) => (
-                            <div
-                                ref={provided.innerRef}
-                                {...provided.droppableProps}
-                                style={{marginRight: "auto"}}
-                            >
-                                <Grid
-                                    item
-                                    xs={'auto'}
-                                    //key={tagGroup?.groupId || 'no tag'}
-                                    style={{
-                                        marginLeft: 4,
-                                        marginTop: 4,
-                                        marginBottom: 4,
-                                        backgroundColor: "lightgray"
-                                    }}
+        <Grid container direction={'row'}>
+            <DragDropContext onDragEnd={onDragEnd}>
+                {columns.length ? (columns.map((column, index) => {
+
+                    //const tagGroup = column[0].tagGroup;
+                    return (
+                        <Droppable droppableId={`${index}`} key={index}>
+                            {(provided) => (
+                                <div
+                                    ref={provided.innerRef}
+                                    {...provided.droppableProps}
+                                    style={{marginRight: 10}}
                                 >
-                                    <RowContainer
-                                        rowIndex={index}
-                                        onChangeDescription={onChangeDescription}
-                                        onChangeTitle={onChangeTitle}
-                                        onClickAdd={onClickAdd}
-                                        tasks={row}
-                                        onClickRemove={onClickRemove}
-                                    />
-                                </Grid>
-                                {provided.placeholder}
-                            </div>
-                        )}
-                    </Droppable>
-                );
-            })): null}
-                </DragDropContext>
+                                    <Grid
+                                        item
+                                        xs={'auto'}
+                                        sx={{ borderRadius: 2}}
+                                        //key={tagGroup?.groupId || 'no tag'}
+                                        style={{
+                                            marginLeft: 10,
+                                            marginTop: 10,
+                                            marginBottom: 4,
+                                            backgroundColor: "lightgray",
+                                            paddingTop: 4,
+                                        }}
+                                    >
+                                        <ColumnHeaderContainer name={tagGroups[index].groupName}/>
+                                        <ColumnContainer
+                                            tagGroup={tagGroups[index]}
+                                            columnIndex={index}
+                                            onChangeDescription={onChangeDescription}
+                                            onChangeTitle={onChangeTitle}
+                                            onClickAdd={onClickAdd}
+                                            tasks={column}
+                                            onClickRemove={onClickRemove}
+                                        />
+                                    </Grid>
+                                    {provided.placeholder}
+                                </div>
+                            )}
+                        </Droppable>
+                    );
+                })) : null}
+            </DragDropContext>
+            <Grid
+                item
+                xs={'auto'}
+                //key={tagGroup?.groupId || 'no tag'}
+                style={{
+                    margin: "auto",
+                    padding: 'auto',
+                    width: 400,
+                }}
+                // alignItems={'center'}
+                // alignContent={'center'}
+                // alignSelf={"center"}
+                // onMouseOver={}
+            >
+                <div
+                    style={{
+                        margin: 'auto',
+                        padding: 'auto',
+                    }}
+                >
+                <Button
+                    variant={'outlined'}
+                    color={"info"}
+                    style={{
+                        width: 300,
+                        height: 150,
+                    }}
+                ><AddIcon />  Add Column</Button>
+                </div>
             </Grid>
-        </div>
+
+        </Grid>
     );
 }
 

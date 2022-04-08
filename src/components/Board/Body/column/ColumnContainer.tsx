@@ -10,15 +10,14 @@ type Props = {
     onChangeTitle : (event:ChangeEvent<HTMLInputElement>, id: string, index: number) => void;
     onChangeDescription : (event:ChangeEvent<HTMLInputElement>, id: string, index: number) => void;
     tasks: Task[];
-    rowIndex: number;
-    onClickRemove: (taskId: string, rowNum: number) => void;
+    columnIndex: number;
+    onClickRemove: (taskId: string, columnNum: number) => void;
+    tagGroup: TagGroup;
 }
 
-const RowContainer = (props: Props) => {
+const ColumnContainer = (props: Props) => {
 
-    const { rowIndex, tasks, onClickAdd, onClickRemove, onChangeTitle, onChangeDescription } = props;
-    const tagGroup = tasks[0].tagGroup;
-    if (!tagGroup) return <></>;
+    const { columnIndex, tasks, tagGroup, onClickAdd, onClickRemove, onChangeTitle, onChangeDescription } = props;
 
     return (
         <Grid
@@ -28,7 +27,7 @@ const RowContainer = (props: Props) => {
         >
             {tasks.map((task, index) => {
                 return (
-                        <Draggable  key={task.taskId} draggableId={task.taskId} index={index}>
+                        <Draggable key={task.taskId} draggableId={task.taskId} index={index}>
                             {provided => (
                                 <div
                                     ref={provided.innerRef}
@@ -37,7 +36,7 @@ const RowContainer = (props: Props) => {
                                 >
                                     <TaskContainer
                                         onClickRemove={onClickRemove}
-                                        rowIndex={rowIndex}
+                                        columnIndex={columnIndex}
                                         onChangeTitle={onChangeTitle}
                                         onChangeDescription={onChangeDescription}
                                         task={task}
@@ -48,9 +47,9 @@ const RowContainer = (props: Props) => {
                         </Draggable>
                 );
             })}
-            <Button onClick={() => onClickAdd(rowIndex, tagGroup)}>Add</Button>
+            <Button onClick={() => onClickAdd(columnIndex, tagGroup)}>Add</Button>
         </Grid>
     );
 }
 
-export default RowContainer;
+export default ColumnContainer;

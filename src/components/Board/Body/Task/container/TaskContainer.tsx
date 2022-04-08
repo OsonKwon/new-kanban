@@ -6,16 +6,16 @@ import TaskImgContainer from "../TaskProperty/TaskImgContainer";
 import TaskTextContainer from "../TaskProperty/TaskTextContainer";
 
 type Props = {
-    rowIndex: number;
+    columnIndex: number;
     task: Task;
     onChangeTitle: (event: ChangeEvent<HTMLInputElement>, id: string, index: number) => void;
     onChangeDescription: (event: ChangeEvent<HTMLInputElement>, id: string, index: number) => void;
-    onClickRemove: (taskId: string, rowNum: number) => void;
+    onClickRemove: (taskId: string, columnNum: number) => void;
 }
 
 const TaskContainer = (props: Props) => {
 
-    const {rowIndex, task, onChangeDescription, onChangeTitle, onClickRemove} = props;
+    const {columnIndex, task, onChangeDescription, onChangeTitle, onClickRemove} = props;
 
     const [modalOpen, setModalOpen] = useState(false);
 
@@ -39,6 +39,7 @@ const TaskContainer = (props: Props) => {
                 flexGrow: 1,
                 padding: 1,
             }}
+            elevation={3}
             onClick={onClickTask}
         >
             <Grid container spacing={5}>
@@ -46,7 +47,7 @@ const TaskContainer = (props: Props) => {
                 <Grid item xs={12} sm container>
                     <Grid item xs container direction="column" spacing={2}>
                         <TaskTextContainer
-                            rowIndex={rowIndex}
+                            columnIndex={columnIndex}
                             card={task}
                             onChangeTitle={onChangeTitle}
                             onChangeDescription={onChangeDescription}
@@ -60,7 +61,7 @@ const TaskContainer = (props: Props) => {
                         </Grid>
                         <Grid item>
                             <Typography sx={{cursor: 'pointer'}} variant="body2"
-                                        onClick={() => onClickRemove(task.taskId, rowIndex)}>
+                                        onClick={() => onClickRemove(task.taskId, columnIndex)}>
                                 Remove
                             </Typography>
                         </Grid>

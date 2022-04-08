@@ -13,7 +13,7 @@ const TaskImgContainer = () => {
                     maxHeight: '100%',
                 }}
                 alt="cat wearing sunglasses"
-                src={"/src/images/stylish-cat-resized.jpg"}
+                src={'src/images/stylish-cat-resized.jpg'}
             />
         </ButtonBase>
     </Grid>
