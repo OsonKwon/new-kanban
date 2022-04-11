@@ -5,7 +5,7 @@ import {Button, Grid} from "@mui/material";
 import {Draggable} from "react-beautiful-dnd";
 import TagGroup from "../Task/entity/TagGroup";
 
-type Props = {
+interface Props {
     onClickAdd: (index: number, tagGroup?: TagGroup) => void;
     onChangeTitle : (event:ChangeEvent<HTMLInputElement>, id: string, index: number) => void;
     onChangeDescription : (event:ChangeEvent<HTMLInputElement>, id: string, index: number) => void;
