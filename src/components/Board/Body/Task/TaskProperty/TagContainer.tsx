@@ -3,17 +3,17 @@ import {FormEvent, useCallback, useState} from "react";
 import TagGroup from "../entity/TagGroup";
 
 type Props = {
-    tagGroup: TagGroup;
+    tagGroups: TagGroup[];
 }
 const TagContainer = (props: Props) => {
 
-    const { tagGroup } = props;
-    const [tagName, setTagName] = useState(tagGroup?.groupName);
+    const { tagGroups } = props;
+    const [tagNames, setTagNames] = useState<string[]>([]);
     const [editable, setEditable] = useState(false);
 
     const onChange = (event: FormEvent<HTMLDivElement>) => {
         const value = event.currentTarget.title;
-        setTagName(value);
+        setTagNames(value);
     }
 
     const onClickTag = useCallback(() => {
@@ -21,8 +21,9 @@ const TagContainer = (props: Props) => {
     }, []);
 
     return (
+
         <Chip
-            label={tagName}
+            label={tagNames}
             onClick={onClickTag}
             contentEditable={editable}
             onChange={(event) => onChange(event)}

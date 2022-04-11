@@ -8,6 +8,8 @@ import {filterTasksByTag, columnReducer, ColumnActionType} from "./ColumnStateMa
 import {sampleProcessTagGroup, taskSample} from "./SampleBuilder";
 import ColumnHeaderContainer from "../column/ColumnHeaderContainer";
 import AddIcon from "@mui/icons-material/Add";
+import TaskContainer from "../Task/container/TaskContainer";
+
 type Props = {
     projectId: string;
 }
@@ -30,7 +32,7 @@ const BoardBodyContainer = (props: Props) => {
     // only tagGroups should be held here and columns should be managed in ColumnContainer.
     // FIXME
     const [columns, setColumns] = useReducer(columnReducer, initialColumns);
-
+    const [tasks, setTasks] = useState<Task[]>([]);
     const onChangeTitle = useCallback((event: ChangeEvent<HTMLInputElement>, id: string, index: number) => {
         setColumns({type: ColumnActionType.changeTitle, payload: event.target.value, id: id, index: index});
     }, []);
@@ -73,7 +75,7 @@ const BoardBodyContainer = (props: Props) => {
     }, []);
 
     const onDragEnd = useCallback((result: DropResult) => {
-        const { source, destination } = result;
+        const { source, destination, draggableId } = result;
 
         if (!destination) return;
 
@@ -112,18 +114,35 @@ const BoardBodyContainer = (props: Props) => {
                                     <Grid
                                         item
                                         xs={'auto'}
-                                        sx={{ borderRadius: 2}}
-                                        style={{
-                                            marginLeft: 10,
-                                            marginTop: 10,
-                                            marginBottom: 4,
-                                            backgroundColor: "lightgray",
-                                            paddingTop: 4,
-                                        }}
+                                        sx={{borderRadius: 2}}
+                                        // style={{
+                                        //     marginLeft: 10,
+                                        //     marginTop: 10,
+                                        //     marginBottom: 4,
+                                        //     backgroundColor: "lightgray",
+                                        //     paddingTop: 4,
+                                        // }}
                                     >
+                                        {rowGroup.tags.map((tag, index) => {
+                                            return <Grid
+                                                item
+                                                xs={"auto"}
+                                                sx={{borderRadius: 2}}
+                                                style={{
+                                                    marginLeft: 10,
+                                                    marginTop: 10,
+                                                    marginBottom: 4,
+                                                    backgroundColor: "lightgray",
+                                                    paddingTop: 4,
+                                                }}>
+                                                <TaskContainer columnIndex={} task={} onChangeTitle={} onChangeDescription={} onClickRemove={}/>
+                                            </Grid>
+
+                                        })}
                                         <ColumnHeaderContainer name={tag.name}/>
                                         <ColumnContainer
-                                            tagGroup={tag}
+                                            tagGroupId={columnGroup.groupId}
+                                            tag={tag}
                                             columnIndex={index}
                                             onChangeDescription={onChangeDescription}
                                             onChangeTitle={onChangeTitle}

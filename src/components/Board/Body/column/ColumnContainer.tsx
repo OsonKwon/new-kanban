@@ -1,11 +1,11 @@
 import TaskContainer from "../Task/container/TaskContainer";
-import Task from "../Task/entity/Task";
 import {ChangeEvent, useMemo, useReducer} from "react";
 import {Button, Grid} from "@mui/material";
 import {Draggable} from "react-beautiful-dnd";
 import TagGroup from "../Task/entity/TagGroup";
 import {tasksReducer} from "../container/ColumnStateManager";
 import {taskSample} from "../container/SampleBuilder";
+import Tag from "../Task/entity/Tag";
 
 type Props = {
     onClickAdd: (index: number, tagGroup?: TagGroup) => void;
@@ -13,14 +13,15 @@ type Props = {
     onChangeDescription : (event:ChangeEvent<HTMLInputElement>, id: string, index: number) => void;
     columnIndex: number;
     onClickRemove: (taskId: string, columnNum: number) => void;
-    tagGroup: TagGroup;
+    tag: Tag;
+    tagGroupId: string;
 }
 
 const ColumnContainer = (props: Props) => {
 
-    const { columnIndex, tagGroup, onClickAdd, onClickRemove, onChangeTitle, onChangeDescription } = props;
+    const { columnIndex, tag, onClickAdd, onClickRemove, onChangeTitle, onChangeDescription } = props;
 
-    const sample = useMemo(() => [taskSample(`${tagGroup.groupName} sample`, tagGroup)], []);
+    const sample = useMemo(() => [taskSample(`${tag.name} sample`, tag)], []);
 
     const [tasks, setTasks] = useReducer(tasksReducer, sample);
     return (
@@ -51,7 +52,7 @@ const ColumnContainer = (props: Props) => {
                         </Draggable>
                 );
             })}
-            <Button onClick={() => onClickAdd(columnIndex, tagGroup)}>Add</Button>
+            <Button onClick={() => onClickAdd(columnIndex, tag)}>Add</Button>
         </Grid>
     );
 }

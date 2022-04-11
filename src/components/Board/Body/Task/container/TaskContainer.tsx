@@ -55,7 +55,7 @@ const TaskContainer = (props: Props) => {
                         <Grid item>
                             {task.tagGroups ? (
                                 <TagContainer
-                                    tagGroup={task.tagGroups}
+                                    tagGroups={task.tagGroups}
                                 />
                             ) : null}
                         </Grid>
@@ -72,7 +72,6 @@ const TaskContainer = (props: Props) => {
             </Grid>
             {/*<TaskModalContainer task={task} open={modalOpen} onClose={onClose}/>*/}
         </Paper>
-
     );
 };
 

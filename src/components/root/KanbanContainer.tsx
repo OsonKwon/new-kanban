@@ -29,7 +29,6 @@ const KanbanContainer = () => {
     //     return project?.title || '';
     // }, [projectId, getProject]);
 
-
     return (
         <div>
             <ProjectBarContainer projectId={projectId} projects={projects}/>

@@ -46,8 +46,6 @@ const TaskModalContainer = (props: Props) => {
                 </Box>
             </DialogContent>
         </Dialog>
-
-
     );
 }
 

@@ -2,9 +2,9 @@ import TagGroup from "../Task/entity/TagGroup";
 import Task from "../Task/entity/Task";
 import Tag from "../Task/entity/Tag";
 
-export const taskSample = (name: string, group: TagGroup[]) => {
+export const taskSample = (name: string, group: TagGroup) => {
     const sample = new Task(crypto.randomUUID(), name);
-    sample.tagGroups = group;
+    sample.addTagGroup(group);
     return sample;
 }
 

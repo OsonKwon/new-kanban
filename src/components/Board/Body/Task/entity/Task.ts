@@ -17,11 +17,21 @@ class Task {
         this.creationDate = creationDate || Date.now();
     }
 
-    addTag(tagGroup: TagGroup) {
+    addTagGroup(tagGroup: TagGroup) {
         if (this.tagGroups.includes(tagGroup)) {
             throw new Error('tag already exists in this task');
         }
         this.tagGroups.push(tagGroup);
+    }
+
+    addTag(tagGroupId: string, tag: Tag) {
+        this.tagGroups.some((group) => {
+            if (group.groupId === tagGroupId) {
+                group.addTag(tag);
+                return false;
+            }
+            else return true;
+        })
     }
 
 }
